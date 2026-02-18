@@ -1,0 +1,18 @@
+id: T000023
+slug: ultimatum-game
+title: Ultimatum Game
+acquisition: behavior
+variant: baseline
+cognitive_domain: []
+maturity: draft
+version:
+  release_tag: v0.3.0-dev
+contracts:
+  psyflow_taps: v0.1.0
+evidence:
+- W2105347098
+- W2166757776
+- W2115247350
+- W2147965914
+- W2128769827
+maintainer: []

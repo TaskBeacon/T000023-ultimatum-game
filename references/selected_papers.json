@@ -1,0 +1,115 @@
+[
+  {
+    "id": "W2105347098",
+    "title": "Evolution of fairness in the one-shot anonymous Ultimatum Game",
+    "authors": [
+      "David G. Rand",
+      "Corina E. Tarnita",
+      "Hisashi Ohtsuki",
+      "Martin A. Nowak"
+    ],
+    "year": 2013,
+    "journal": "Proceedings of the National Academy of Sciences",
+    "doi_or_url": "https://doi.org/10.1073/pnas.1214167110",
+    "citation_count": 244,
+    "is_high_impact": true,
+    "open_access": true,
+    "used_for": [
+      "task_workflow",
+      "timing_parameters"
+    ],
+    "parameter_bindings": {},
+    "notes": ""
+  },
+  {
+    "id": "W2166757776",
+    "title": "Rejection of unfair offers in the ultimatum game is no evidence of strong reciprocity",
+    "authors": [
+      "Toshio Yamagishi",
+      "Yutaka Horita",
+      "Nobuhiro Mifune",
+      "Hirofumi Hashimoto",
+      "Yang Li",
+      "Mizuho Shinada",
+      "Arisa Miura",
+      "Keigo Inukai",
+      "Haruto Takagishi",
+      "Dora Šimunović"
+    ],
+    "year": 2012,
+    "journal": "Proceedings of the National Academy of Sciences",
+    "doi_or_url": "https://doi.org/10.1073/pnas.1212126109",
+    "citation_count": 238,
+    "is_high_impact": true,
+    "open_access": true,
+    "used_for": [
+      "task_workflow",
+      "timing_parameters"
+    ],
+    "parameter_bindings": {},
+    "notes": ""
+  },
+  {
+    "id": "W2115247350",
+    "title": "Reappraising the Ultimatum: an fMRI Study of Emotion Regulation and Decision Making",
+    "authors": [
+      "Alessandro Grecucci",
+      "Cinzia Giorgetta",
+      "Mascha van ‘t Wout‐Frank",
+      "Nicolao Bonini",
+      "Alan G. Sanfey"
+    ],
+    "year": 2012,
+    "journal": "Cerebral Cortex",
+    "doi_or_url": "https://doi.org/10.1093/cercor/bhs028",
+    "citation_count": 209,
+    "is_high_impact": true,
+    "open_access": true,
+    "used_for": [
+      "task_workflow",
+      "timing_parameters"
+    ],
+    "parameter_bindings": {},
+    "notes": ""
+  },
+  {
+    "id": "W2147965914",
+    "title": "Irrational Economic Decision-Making after Ventromedial Prefrontal Damage: Evidence from the Ultimatum Game",
+    "authors": [
+      "Michael Koenigs",
+      "Daniel Tranel"
+    ],
+    "year": 2007,
+    "journal": "Journal of Neuroscience",
+    "doi_or_url": "https://doi.org/10.1523/jneurosci.4606-06.2007",
+    "citation_count": 595,
+    "is_high_impact": false,
+    "open_access": true,
+    "used_for": [
+      "task_workflow",
+      "timing_parameters"
+    ],
+    "parameter_bindings": {},
+    "notes": ""
+  },
+  {
+    "id": "W2128769827",
+    "title": "Anomalies: Ultimatums, Dictators and Manners",
+    "authors": [
+      "Colin F. Camerer",
+      "Richard H. Thaler"
+    ],
+    "year": 1995,
+    "journal": "The Journal of Economic Perspectives",
+    "doi_or_url": "https://doi.org/10.1257/jep.9.2.209",
+    "citation_count": 1342,
+    "is_high_impact": false,
+    "open_access": true,
+    "used_for": [
+      "task_workflow",
+      "timing_parameters"
+    ],
+    "parameter_bindings": {},
+    "notes": ""
+  }
+]

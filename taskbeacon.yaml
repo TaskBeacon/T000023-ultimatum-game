@@ -6,7 +6,7 @@ variant: baseline
 cognitive_domain: []
 maturity: draft
 version:
-  release_tag: v0.3.0-dev
+  release_tag: v0.3.1-dev
 contracts:
   psyflow_taps: v0.1.0
 evidence:

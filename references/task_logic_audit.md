@@ -20,25 +20,25 @@
 ### Trial State Machine
 
 1. `offer_cue`
-   - Onset trigger: `{condition}_cue_onset`.
+   - Onset trigger: `{condition}_offer_cue_onset` (fallback-compatible with `{condition}_cue_onset`).
    - Stimuli shown: `offer_cue`.
    - Valid keys: none.
    - Timeout behavior: fixed-duration display.
    - Next state: `pre_decision_fixation`.
 2. `pre_decision_fixation`
-   - Onset trigger: `{condition}_anticipation_onset`.
+   - Onset trigger: `{condition}_pre_decision_fixation_onset` (fallback-compatible with `{condition}_anticipation_onset`).
    - Stimuli shown: `fixation`.
    - Valid keys: none.
    - Timeout behavior: fixed-duration display.
    - Next state: `offer_decision`.
 3. `offer_decision`
-   - Onset trigger: `{condition}_offer_onset`.
+   - Onset trigger: `{condition}_offer_decision_onset` (fallback-compatible with `{condition}_offer_onset`).
    - Stimuli shown: `offer_panel` (proposer/responder shares).
    - Valid keys: `f` (accept), `j` (reject).
    - Timeout behavior: missing response is treated as rejection; timeout trigger `decision_timeout`.
    - Next state: `decision_confirmation`.
 4. `decision_confirmation`
-   - Onset trigger: `decision_feedback_onset`.
+   - Onset trigger: `decision_confirmation_onset` (fallback-compatible with `decision_feedback_onset`).
    - Stimuli shown: `decision_accept` or `decision_reject` or `decision_timeout`.
    - Valid keys: none.
    - Timeout behavior: fixed-duration display.
@@ -48,8 +48,8 @@
    - Stimuli shown: `payoff_feedback`.
    - Valid keys: none.
    - Timeout behavior: fixed-duration display.
-   - Next state: `inter_trial_interval`.
-6. `inter_trial_interval`
+   - Next state: `iti`.
+6. `iti`
    - Onset trigger: `iti_onset`.
    - Stimuli shown: `fixation`.
    - Valid keys: none.
@@ -106,10 +106,10 @@ QA logs show these single-text layouts render without overlap warnings for parti
 
 - Experiment: `exp_onset=1`, `exp_end=2`.
 - Block: `block_onset=10`, `block_end=11`.
-- Cue onsets: `fair=20`, `unfair=21`, `very_unfair=22`.
-- Anticipation onsets: `fair=23`, `unfair=24`, `very_unfair=25`.
-- Offer decision onsets: `fair=30`, `unfair=31`, `very_unfair=32`.
-- Decision events: `decision_response=50`, `decision_timeout=51`, `decision_feedback_onset=52`.
+- Offer-cue onsets: `fair=20`, `unfair=21`, `very_unfair=22`.
+- Pre-decision fixation onsets: `fair=23`, `unfair=24`, `very_unfair=25`.
+- Offer-decision onsets: `fair=30`, `unfair=31`, `very_unfair=32`.
+- Decision events: `decision_response=50`, `decision_timeout=51`, `decision_confirmation_onset=52`.
 - Payoff and ITI: `payoff_feedback_onset=53`, `iti_onset=60`.
 
 ## 7. Inference Log
@@ -123,3 +123,6 @@ QA logs show these single-text layouts render without overlap warnings for parti
 - Decision: timeout treated as rejection.
   - Why inference was required: not all references explicitly define timeout policy.
   - Citation-supported rationale: responder payout logic in UG requires explicit reject-equivalent handling for non-responses in fixed-window computerized tasks.
+- Decision: runtime output keys use ultimatum-specific unit labels (`offer_decision_*`, `decision_confirmation_*`, `payoff_feedback_*`) instead of template labels (`target_*`, `decision_feedback_*`).
+  - Why inference was required: this is an implementation contract decision, not a paradigm manipulation.
+  - Citation-supported rationale: preserves paradigm semantics while removing MID-template residue from event/data schemas.

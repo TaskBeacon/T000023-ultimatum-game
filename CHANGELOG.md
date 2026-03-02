@@ -1,5 +1,18 @@
 ﻿# CHANGELOG
 
+## [0.3.1-dev] - 2026-02-19
+
+### Changed
+- Refactored trial runtime contract in `src/run_trial.py` to ultimatum-specific unit labels and phases:
+  - `cue/anticipation/target/decision_feedback/feedback/inter_trial_interval` -> `offer_cue/pre_decision_fixation/offer_decision/decision_confirmation/payoff_feedback/iti`.
+- Added fallback-compatible semantic timing keys in runtime and synced all config profiles:
+  - `offer_cue_duration`, `pre_decision_fixation_duration`, `offer_decision_duration`, `decision_confirmation_duration`, `payoff_feedback_duration`.
+- Renamed trigger map keys across configs and runtime:
+  - `{condition}_offer_cue_onset`, `{condition}_pre_decision_fixation_onset`, `{condition}_offer_decision_onset`, `decision_confirmation_onset`.
+- Updated sampler responder decision gating to `offer_decision` (removed legacy `target` dependency) in `responders/task_sampler.py`.
+- Updated QA acceptance schema from `target_response` to `offer_decision_response` in `config/config_qa.yaml`.
+- Synchronized reference and documentation artifacts (`references/task_logic_audit.md`, `references/parameter_mapping.md`, `README.md`) to the repaired runtime contract.
+
 ## [0.3.0-dev] - 2026-02-18
 
 ### Changed

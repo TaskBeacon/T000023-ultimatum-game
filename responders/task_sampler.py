@@ -75,7 +75,7 @@ class TaskSamplerResponder:
             )
 
         phase = str(obs.phase or "")
-        if phase != "target":
+        if phase not in {"offer_decision", "ultimatum_decision"}:
             return Action(key=None, rt_s=None, meta={"source": "task_sampler", "phase": phase})
 
         factors = dict(obs.task_factors or {})

@@ -52,11 +52,11 @@ task:
   voice_name: zh-CN-YunyangNeural
   voice_enabled: false
 timing:
-  cue_duration: 0.5
-  anticipation_duration: 0.6
-  offer_duration: 2.0
-  decision_feedback_duration: 0.6
-  feedback_duration: 1.0
+  offer_cue_duration: 0.5
+  pre_decision_fixation_duration: 0.6
+  offer_decision_duration: 2.0
+  decision_confirmation_duration: 0.6
+  payoff_feedback_duration: 1.0
   iti_duration: 0.8
 stimuli:
   fixation:
@@ -175,18 +175,18 @@ triggers:
     exp_end: 2
     block_onset: 10
     block_end: 11
-    fair_cue_onset: 20
-    unfair_cue_onset: 21
-    very_unfair_cue_onset: 22
-    fair_anticipation_onset: 23
-    unfair_anticipation_onset: 24
-    very_unfair_anticipation_onset: 25
-    fair_offer_onset: 30
-    unfair_offer_onset: 31
-    very_unfair_offer_onset: 32
+    fair_offer_cue_onset: 20
+    unfair_offer_cue_onset: 21
+    very_unfair_offer_cue_onset: 22
+    fair_pre_decision_fixation_onset: 23
+    unfair_pre_decision_fixation_onset: 24
+    very_unfair_pre_decision_fixation_onset: 25
+    fair_offer_decision_onset: 30
+    unfair_offer_decision_onset: 31
+    very_unfair_offer_decision_onset: 32
     decision_response: 50
     decision_timeout: 51
-    decision_feedback_onset: 52
+    decision_confirmation_onset: 52
     payoff_feedback_onset: 53
     iti_onset: 60
   driver:

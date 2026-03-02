@@ -5,11 +5,11 @@
 | Field | Value |
 |---|---|
 | Name | Ultimatum Game |
-| Version | v0.3.0-dev |
+| Version | v0.3.1-dev |
 | URL / Repository | https://github.com/TaskBeacon/T000023-ultimatum-game |
 | Short Description | Responder-side accept/reject decisions for fairness-manipulated monetary allocation offers. |
 | Created By | TaskBeacon |
-| Date Updated | 2026-02-18 |
+| Date Updated | 2026-02-19 |
 | PsyFlow Version | 0.1.9 |
 | PsychoPy Version | 2025.1.1 |
 | Modality | Behavior |
@@ -57,8 +57,8 @@ Accepting yields the displayed responder share. Rejecting or timing out yields z
 | Logic | Description |
 |---|---|
 | Timeout policy | Missing responses are treated as rejection with zero earnings. |
-| Trigger policy | Condition-specific onset triggers for cue/anticipation/decision plus global block/experiment markers. |
-| Runtime context phases | `offer_cue`, `pre_decision_fixation`, `offer_decision`, `decision_confirmation`, `payoff_feedback`, `inter_trial_interval`. |
+| Trigger policy | Condition-specific onset triggers for offer-cue/pre-decision-fixation/offer-decision plus global block/experiment markers. |
+| Runtime context phases | `offer_cue`, `pre_decision_fixation`, `offer_decision`, `decision_confirmation`, `payoff_feedback`, `iti`. |
 
 ## 3. Configuration Summary
 
@@ -99,11 +99,11 @@ Accepting yields the displayed responder share. Rejecting or timing out yields z
 
 | Phase | Duration |
 |---|---|
-| cue | 0.5 s |
-| anticipation | 0.6 s |
-| offer | 2.0 s |
-| decision_feedback | 0.6 s |
-| feedback | 1.0 s |
+| offer_cue | 0.5 s |
+| pre_decision_fixation | 0.6 s |
+| offer_decision | 2.0 s |
+| decision_confirmation | 0.6 s |
+| payoff_feedback | 1.0 s |
 | iti | 0.8 s |
 
 ### e. Triggers
@@ -112,10 +112,10 @@ Accepting yields the displayed responder share. Rejecting or timing out yields z
 |---|---|
 | Experiment | `exp_onset=1`, `exp_end=2` |
 | Block | `block_onset=10`, `block_end=11` |
-| Condition cue | `fair=20`, `unfair=21`, `very_unfair=22` |
-| Condition anticipation | `fair=23`, `unfair=24`, `very_unfair=25` |
-| Condition offer onset | `fair=30`, `unfair=31`, `very_unfair=32` |
-| Decision events | `decision_response=50`, `decision_timeout=51`, `decision_feedback_onset=52` |
+| Condition offer cue | `fair=20`, `unfair=21`, `very_unfair=22` |
+| Condition pre-decision fixation | `fair=23`, `unfair=24`, `very_unfair=25` |
+| Condition offer decision onset | `fair=30`, `unfair=31`, `very_unfair=32` |
+| Decision events | `decision_response=50`, `decision_timeout=51`, `decision_confirmation_onset=52` |
 | Outcome/pacing | `payoff_feedback_onset=53`, `iti_onset=60` |
 
 ### f. Adaptive/Controller

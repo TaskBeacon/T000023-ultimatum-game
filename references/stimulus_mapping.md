@@ -1,15 +1,22 @@
-# Stimulus Mapping
+﻿# Stimulus Mapping
 
-Task: `Ultimatum Game`
+## Mapping Table
 
-| Condition | Implemented Stimulus IDs | Source Paper ID | Evidence (quote/figure/table) | Implementation Mode | Notes |
-|---|---|---|---|---|---|
-| `fair` | `offer_cue`, `offer_panel`, `decision_accept/reject/timeout`, `payoff_feedback` | `W2166757776`, `W2128769827` | UG responder receives monetary split and can accept/reject; fair offers serve as high-acceptance baseline. | `psychopy_builtin` | Implemented as proposer/responder split `5/5` in `controller.offer_profiles.fair`. |
-| `unfair` | `offer_cue`, `offer_panel`, `decision_accept/reject/timeout`, `payoff_feedback` | `W2166757776`, `W2147965914` | Unfair offers drive elevated rejection rates in canonical UG responder tasks. | `psychopy_builtin` | Implemented as split `7/3` in `controller.offer_profiles.unfair`. |
-| `very_unfair` | `offer_cue`, `offer_panel`, `decision_accept/reject/timeout`, `payoff_feedback` | `W2147965914`, `W2115247350` | Strongly disadvantageous offers are commonly used in neuroeconomic UG paradigms to amplify unfairness sensitivity. | `psychopy_builtin` | Implemented as split `9/1`; marked as an inferred extension of unfair-offer manipulation. |
-| Shared trial scaffolding | `fixation`, `instruction_text`, `block_break`, `good_bye` | `inferred` | Standard pacing/instruction scaffolding for computerized UG implementation. | `psychopy_builtin` | Non-decision scaffolding does not expose condition tokens directly. |
-
-Implementation mode legend:
-- `psychopy_builtin`: stimulus rendered via PsychoPy primitives in config.
-- `generated_reference_asset`: task-specific synthetic assets generated from reference-described stimulus rules.
-- `licensed_external_asset`: externally sourced licensed media with protocol linkage.
+| Condition | Stage/Phase | Stimulus IDs | Participant-Facing Content | Source Paper ID | Evidence (quote/figure/table) | Implementation Mode | Asset References | Notes |
+|---|---|---|---|---|---|---|---|---|
+| `fair` | `offer_cue` | `offer_cue` | Neutral pre-offer prompt indicating an offer is coming. | `W2115247350` | Phase-separated UG sequence with preparatory stage before decision. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_cue` | Same cue text across conditions to avoid fairness leakage. |
+| `fair` | `offer_decision` | `offer_panel` | Monetary split shows proposer `5`, responder `5`; participant chooses accept/reject. | `W2166757776`, `W2128769827` | Fair split as benchmark UG offer. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_panel` | Shares are injected via template formatting. |
+| `fair` | `decision_confirmation` | `decision_accept`, `decision_reject`, `decision_timeout` | Choice acknowledgement after response or timeout. | `W2115247350` | Distinct post-choice stage in phase-separated implementations. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one feedback stimulus by key outcome. |
+| `fair` | `payoff_feedback` | `payoff_feedback` | Trial earning and running total are displayed. | `W2147965914` | UG outcome display reflects accept/reject payoff consequence. | `psychopy_builtin` | `config/*.yaml -> stimuli.payoff_feedback` | `earned` and `total_earned` formatted at runtime. |
+| `unfair` | `offer_cue` | `offer_cue` | Neutral pre-offer prompt indicating an offer is coming. | `W2115247350` | Phase-separated UG sequence with preparatory stage before decision. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_cue` | Same cue text across conditions to avoid fairness leakage. |
+| `unfair` | `offer_decision` | `offer_panel` | Monetary split shows proposer `7`, responder `3`; participant chooses accept/reject. | `W2166757776`, `W2147965914` | Unfair offer levels increase rejection probability. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_panel` | Shares are injected via template formatting. |
+| `unfair` | `decision_confirmation` | `decision_accept`, `decision_reject`, `decision_timeout` | Choice acknowledgement after response or timeout. | `W2115247350` | Distinct post-choice stage in phase-separated implementations. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one feedback stimulus by key outcome. |
+| `unfair` | `payoff_feedback` | `payoff_feedback` | Trial earning and running total are displayed. | `W2147965914` | UG outcome display reflects accept/reject payoff consequence. | `psychopy_builtin` | `config/*.yaml -> stimuli.payoff_feedback` | `earned` and `total_earned` formatted at runtime. |
+| `very_unfair` | `offer_cue` | `offer_cue` | Neutral pre-offer prompt indicating an offer is coming. | `W2115247350` | Phase-separated UG sequence with preparatory stage before decision. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_cue` | Same cue text across conditions to avoid fairness leakage. |
+| `very_unfair` | `offer_decision` | `offer_panel` | Monetary split shows proposer `9`, responder `1`; participant chooses accept/reject. | `W2147965914`, `W2115247350` | Strongly unequal offers as high-unfairness manipulation. | `psychopy_builtin` | `config/*.yaml -> stimuli.offer_panel` | Marked as inferred extension in parameter mapping. |
+| `very_unfair` | `decision_confirmation` | `decision_accept`, `decision_reject`, `decision_timeout` | Choice acknowledgement after response or timeout. | `W2115247350` | Distinct post-choice stage in phase-separated implementations. | `psychopy_builtin` | `config/*.yaml -> stimuli.decision_*` | Runtime selects one feedback stimulus by key outcome. |
+| `very_unfair` | `payoff_feedback` | `payoff_feedback` | Trial earning and running total are displayed. | `W2147965914` | UG outcome display reflects accept/reject payoff consequence. | `psychopy_builtin` | `config/*.yaml -> stimuli.payoff_feedback` | `earned` and `total_earned` formatted at runtime. |
+| `all` | `pre_decision_fixation` | `fixation` | Center fixation cross before offer screen. | `W2115247350` | Pre-decision fixation stage in phase-separated timing. | `psychopy_builtin` | `config/*.yaml -> stimuli.fixation` | Shared across conditions. |
+| `all` | `instruction` | `instruction_text` | Task instructions including key mapping and UG rules. | `W2128769827` | Responder role and accept/reject payoff consequences define UG protocol. | `psychopy_builtin` | `config/*.yaml -> stimuli.instruction_text` | Localization-ready text kept in config. |
+| `all` | `block_break` | `block_break` | Block summary with acceptance rate and earnings. | `inferred` | Practical session scaffolding for multi-block computerized tasks. | `psychopy_builtin` | `config/*.yaml -> stimuli.block_break` | Non-paradigm control screen. |
+| `all` | `goodbye` | `good_bye` | End-of-task summary with final earnings. | `inferred` | Practical end screen for controlled termination. | `psychopy_builtin` | `config/*.yaml -> stimuli.good_bye` | Non-paradigm control screen. |

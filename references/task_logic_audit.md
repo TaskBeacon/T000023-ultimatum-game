@@ -1,128 +1,148 @@
-# Task Logic Audit: Ultimatum Game (T000023)
+﻿# Task Logic Audit: Ultimatum Game (T000023)
 
 ## 1. Paradigm Intent
 
 - Task: `ultimatum_game`
-- Primary construct: fairness-sensitive social decision making as the responder in an Ultimatum Game.
-- Manipulated factors: offer fairness level via proposer/responder split (`fair`, `unfair`, `very_unfair`).
-- Dependent measures: acceptance rate, response time, condition-wise acceptance profile, per-trial and cumulative earnings.
+- Primary construct: fairness-sensitive social decision making in the responder role.
+- Manipulated factors: proposer-responder split fairness (`fair`, `unfair`, `very_unfair`).
+- Dependent measures: acceptance rate, response time, condition-wise acceptance profile, trial earnings, cumulative earnings.
 - Key citations: `W2105347098`, `W2166757776`, `W2115247350`, `W2147965914`, `W2128769827`.
 
 ## 2. Block/Trial Workflow
 
 ### Block Structure
 
-- Total blocks (human): `task.total_blocks = 3`.
-- Trials per block (human): `task.trial_per_block = 24`.
-- QA/sim profiles shorten to one block of nine trials for fast gate execution.
-- Randomization/counterbalancing: `Controller.prepare_block(...)` balances condition counts within each block and shuffles trial order.
+- Total blocks: `3` in human mode; `1` in QA/sim modes.
+- Trials per block: `24` in human mode; `9` in QA/sim modes.
+- Randomization/counterbalancing: per-block condition list is balanced and shuffled by `Controller.prepare_block(...)`.
+- Condition generation method:
+  - Custom generator via `Controller.prepare_block(...)`.
+  - Rationale: each trial needs pre-expanded proposer/responder shares and a reproducible `condition_id` tuple payload.
+  - Generated condition data shape: `(condition, condition_label, proposer_share, responder_share, condition_id, trial_index)`.
+- Runtime-generated trial values (if any):
+  - Generated in `run_trial.py`: `accepted`, `rejected`, `timed_out`, `earned`, `total_earned`, and formatted outcome-dependent stimulus selection.
+  - Determinism: block scheduling is seeded (`controller.seed`) and sim responders are seed-driven.
 
 ### Trial State Machine
 
 1. `offer_cue`
-   - Onset trigger: `{condition}_offer_cue_onset` (fallback-compatible with `{condition}_cue_onset`).
-   - Stimuli shown: `offer_cue`.
-   - Valid keys: none.
-   - Timeout behavior: fixed-duration display.
-   - Next state: `pre_decision_fixation`.
+   - Onset trigger: `{condition}_offer_cue_onset`
+   - Stimuli shown: `offer_cue`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `pre_decision_fixation`
 2. `pre_decision_fixation`
-   - Onset trigger: `{condition}_pre_decision_fixation_onset` (fallback-compatible with `{condition}_anticipation_onset`).
-   - Stimuli shown: `fixation`.
-   - Valid keys: none.
-   - Timeout behavior: fixed-duration display.
-   - Next state: `offer_decision`.
+   - Onset trigger: `{condition}_pre_decision_fixation_onset`
+   - Stimuli shown: `fixation`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `offer_decision`
 3. `offer_decision`
-   - Onset trigger: `{condition}_offer_decision_onset` (fallback-compatible with `{condition}_offer_onset`).
-   - Stimuli shown: `offer_panel` (proposer/responder shares).
-   - Valid keys: `f` (accept), `j` (reject).
-   - Timeout behavior: missing response is treated as rejection; timeout trigger `decision_timeout`.
-   - Next state: `decision_confirmation`.
+   - Onset trigger: `{condition}_offer_decision_onset`
+   - Stimuli shown: `offer_panel`
+   - Valid keys: accept/reject keys from `task.key_list`
+   - Timeout behavior: no response emits `decision_timeout`, handled as reject
+   - Next state: `decision_confirmation`
 4. `decision_confirmation`
-   - Onset trigger: `decision_confirmation_onset` (fallback-compatible with `decision_feedback_onset`).
-   - Stimuli shown: `decision_accept` or `decision_reject` or `decision_timeout`.
-   - Valid keys: none.
-   - Timeout behavior: fixed-duration display.
-   - Next state: `payoff_feedback`.
+   - Onset trigger: `decision_confirmation_onset`
+   - Stimuli shown: one of `decision_accept`, `decision_reject`, `decision_timeout`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `payoff_feedback`
 5. `payoff_feedback`
-   - Onset trigger: `payoff_feedback_onset`.
-   - Stimuli shown: `payoff_feedback`.
-   - Valid keys: none.
-   - Timeout behavior: fixed-duration display.
-   - Next state: `iti`.
-6. `iti`
-   - Onset trigger: `iti_onset`.
-   - Stimuli shown: `fixation`.
-   - Valid keys: none.
-   - Timeout behavior: fixed-duration display.
-   - Next state: next trial or block end.
-
-Block boundaries emit `block_onset` and `block_end`. Experiment boundaries emit `exp_onset` and `exp_end`.
+   - Onset trigger: `payoff_feedback_onset`
+   - Stimuli shown: `payoff_feedback`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: `inter_trial_interval`
+6. `inter_trial_interval`
+   - Onset trigger: `iti_onset`
+   - Stimuli shown: `fixation`
+   - Valid keys: none
+   - Timeout behavior: fixed-duration display
+   - Next state: next trial or block end
 
 ## 3. Condition Semantics
 
 - Condition ID: `fair`
-  - Participant-facing meaning: equal split offer.
-  - Concrete stimulus realization: proposer `5`, responder `5` rendered in `offer_panel`.
-  - Outcome rules: accept yields `5`; reject/timeout yields `0`.
+- Participant-facing meaning: equal split offer.
+- Concrete stimulus realization (visual/audio): `offer_panel` renders proposer `5`, responder `5`.
+- Outcome rules: accept -> responder earns `5`; reject/timeout -> `0`.
+
 - Condition ID: `unfair`
-  - Participant-facing meaning: moderately unfair split against the responder.
-  - Concrete stimulus realization: proposer `7`, responder `3` rendered in `offer_panel`.
-  - Outcome rules: accept yields `3`; reject/timeout yields `0`.
+- Participant-facing meaning: moderately unfair split against responder.
+- Concrete stimulus realization (visual/audio): `offer_panel` renders proposer `7`, responder `3`.
+- Outcome rules: accept -> responder earns `3`; reject/timeout -> `0`.
+
 - Condition ID: `very_unfair`
-  - Participant-facing meaning: highly unfair split against the responder.
-  - Concrete stimulus realization: proposer `9`, responder `1` rendered in `offer_panel`.
-  - Outcome rules: accept yields `1`; reject/timeout yields `0`.
+- Participant-facing meaning: strongly unfair split against responder.
+- Concrete stimulus realization (visual/audio): `offer_panel` renders proposer `9`, responder `1`.
+- Outcome rules: accept -> responder earns `1`; reject/timeout -> `0`.
+
+Also document where participant-facing condition text/stimuli are defined:
+
+- Participant-facing text source (config stimuli / code formatting / generated assets): config stimuli in `config/*.yaml`, with dynamic values inserted through `stim_bank.get_and_format(...)`.
+- Why this source is appropriate for auditability: wording is centralized and visible in configuration artifacts.
+- Localization strategy (how language variants are swapped via config without code edits): localized YAML config variants can replace all participant-facing text while `src/run_trial.py` remains unchanged.
 
 ## 4. Response and Scoring Rules
 
-- Response mapping: `f` = accept, `j` = reject.
-- Missing-response policy: timeout is logged and handled as rejection (`earned = 0`).
-- Correctness logic: no objective correctness; decisions reflect preference under fairness manipulation.
-- Reward updates: `earned = responder_share` for accepted offers, else `0`.
-- Running metrics: `controller.total_earned` is cumulative; block summaries report acceptance rate and block earnings.
+- Response mapping: first key in `task.key_list` = accept, second key = reject.
+- Response key source (config field vs code constant): config field `task.key_list`.
+- If code-defined, why config-driven mapping is not sufficient: not applicable.
+- Missing-response policy: timeout in `offer_decision` is treated as reject.
+- Correctness logic: no objective correctness; decision preference under fairness manipulation is measured.
+- Reward/penalty updates: accept yields `responder_share`; reject/timeout yields `0`.
+- Running metrics: controller tracks block-level and cumulative earnings plus condition-level decision history.
 
 ## 5. Stimulus Layout Plan
 
-- Screen: `instruction_text`
-  - Stimulus IDs shown: `instruction_text`.
-  - Layout: single centered text object (`wrapWidth=980`, `height=28`, `font=SimHei`).
-  - Rationale: dense instruction content remains legible without overlap.
-- Screen: `offer_cue`
-  - Stimulus IDs shown: `offer_cue`.
-  - Layout: single centered text object (`wrapWidth=980`, `height=34`).
-  - Rationale: neutral pre-decision prompt without fairness-token leakage.
-- Screen: `offer_decision`
-  - Stimulus IDs shown: `offer_panel`.
-  - Layout: single centered multi-line text object (`wrapWidth=980`, `height=40`) with separate lines for proposer and responder shares.
-  - Rationale: preserves clear offer structure while enforcing a single decision focus.
-- Screen: feedback and summaries
-  - Stimulus IDs shown: `decision_*`, `payoff_feedback`, `block_break`, `good_bye`.
-  - Layout: single centered text objects with controlled wrap and line spacing by explicit `height` + `wrapWidth`.
-  - Rationale: minimizes overlap risk across 1280x720 QA/human windows.
+For every screen with multiple simultaneous options/stimuli:
 
-QA logs show these single-text layouts render without overlap warnings for participant-facing elements.
+- Screen name: `offer_decision`
+- Stimulus IDs shown together: `offer_panel` (multi-line single object)
+- Layout anchors (`pos`): centered (default text anchor)
+- Size/spacing (`height`, width, wrap): `height=40`, `wrapWidth=980`
+- Readability/overlap checks: QA run verifies full text visibility at `1280x720`
+- Rationale: single focal panel minimizes scan complexity during timed decisions
+
+- Screen name: `payoff_feedback`
+- Stimulus IDs shown together: `payoff_feedback` (multi-line single object)
+- Layout anchors (`pos`): centered
+- Size/spacing (`height`, width, wrap): `height=38`, `wrapWidth=980`
+- Readability/overlap checks: QA run verifies no clipping at `1280x720`
+- Rationale: compact summary of trial and cumulative payoff
 
 ## 6. Trigger Plan
 
-- Experiment: `exp_onset=1`, `exp_end=2`.
-- Block: `block_onset=10`, `block_end=11`.
-- Offer-cue onsets: `fair=20`, `unfair=21`, `very_unfair=22`.
-- Pre-decision fixation onsets: `fair=23`, `unfair=24`, `very_unfair=25`.
-- Offer-decision onsets: `fair=30`, `unfair=31`, `very_unfair=32`.
-- Decision events: `decision_response=50`, `decision_timeout=51`, `decision_confirmation_onset=52`.
-- Payoff and ITI: `payoff_feedback_onset=53`, `iti_onset=60`.
+- Experiment boundaries: `exp_onset=1`, `exp_end=2`
+- Block boundaries: `block_onset=10`, `block_end=11`
+- Offer cue onsets: `fair=20`, `unfair=21`, `very_unfair=22`
+- Pre-decision fixation onsets: `fair=23`, `unfair=24`, `very_unfair=25`
+- Offer decision onsets: `fair=30`, `unfair=31`, `very_unfair=32`
+- Decision events: `decision_response=50`, `decision_timeout=51`, `decision_confirmation_onset=52`
+- Outcome and pacing: `payoff_feedback_onset=53`, `iti_onset=60`
 
-## 7. Inference Log
+## 7. Architecture Decisions (Auditability)
 
-- Decision: include three fairness bins (`fair`, `unfair`, `very_unfair`) with fixed 10-point budget splits.
-  - Why inference was required: selected papers vary in exact offer sets across studies.
-  - Citation-supported rationale: fairness-gradient acceptance behavior is central across UG references (`W2166757776`, `W2128769827`, `W2147965914`).
-- Decision: include pre-offer cue and anticipation phase before response.
-  - Why inference was required: timing structure differs between behavioral-only and neuroimaging implementations.
-  - Citation-supported rationale: phase-separated trial timing aligns with neuroimaging-ready UG designs (`W2115247350`) while preserving responder offer-decision core.
-- Decision: timeout treated as rejection.
-  - Why inference was required: not all references explicitly define timeout policy.
-  - Citation-supported rationale: responder payout logic in UG requires explicit reject-equivalent handling for non-responses in fixed-window computerized tasks.
-- Decision: runtime output keys use ultimatum-specific unit labels (`offer_decision_*`, `decision_confirmation_*`, `payoff_feedback_*`) instead of template labels (`target_*`, `decision_feedback_*`).
-  - Why inference was required: this is an implementation contract decision, not a paradigm manipulation.
-  - Citation-supported rationale: preserves paradigm semantics while removing MID-template residue from event/data schemas.
+- `main.py` runtime flow style (simple single flow / helper-heavy / why): simple mode-aware single flow (`human|qa|sim`) to keep execution path auditable.
+- `utils.py` used? (yes/no): yes.
+- If yes, exact purpose (adaptive controller / sequence generation / asset pool / other): sequence generation and payoff/history bookkeeping for UG condition scheduling.
+- Custom controller used? (yes/no): yes.
+- If yes, why PsyFlow-native path is insufficient: condition tuples need deterministic embedded share values and stable condition IDs for traceable trial logs.
+- Legacy/backward-compatibility fallback logic required? (yes/no): no.
+- If yes, scope and removal plan: not applicable.
+
+## 8. Inference Log
+
+- Decision: include `very_unfair` (`9/1`) condition in addition to fair/unfair.
+- Why inference was required: references vary in exact offer sets and not all include identical three-bin gradients.
+- Citation-supported rationale: unfairness-gradient manipulations are central to UG acceptance/rejection effects (`W2166757776`, `W2147965914`).
+
+- Decision: use deterministic timeout-as-reject scoring.
+- Why inference was required: timeout behavior is not consistently specified across cited implementations.
+- Citation-supported rationale: reject-equivalent non-accept outcomes preserve UG payoff semantics (`W2128769827`).
+
+- Decision: maintain explicit `decision_confirmation` phase between choice and payoff.
+- Why inference was required: stage granularity differs across behavioral vs imaging-focused reports.
+- Citation-supported rationale: phase-separated timing is consistent with event-structured UG implementations (`W2115247350`).

@@ -31,7 +31,7 @@ def _parse_condition(condition: Any) -> dict[str, Any]:
     if isinstance(condition, dict):
         return {
             "condition": str(condition.get("condition", "fair")),
-            "condition_label": str(condition.get("condition_label", "公平")),
+            "condition_label": str(condition.get("condition_label", "fair")),
             "proposer_share": int(condition.get("proposer_share", 5)),
             "responder_share": int(condition.get("responder_share", 5)),
             "condition_id": str(condition.get("condition_id", "unknown")),
@@ -76,12 +76,12 @@ def run_trial(
     }
     make_unit = partial(StimUnit, win=win, kb=kb, runtime=trigger_runtime)
 
-    cue = make_unit(unit_label="cue").add_stim(stim_bank.get("offer_cue"))
+    cue = make_unit(unit_label="offer_cue").add_stim(stim_bank.get("offer_cue"))
     set_trial_context(
         cue,
         trial_id=trial_id,
         phase="offer_cue",
-        deadline_s=_deadline_s(settings.cue_duration),
+        deadline_s=_deadline_s(settings.offer_cue_duration),
         valid_keys=[],
         block_id=trial_data["block_id"],
         condition_id=parsed["condition_id"],
@@ -89,16 +89,16 @@ def run_trial(
         stim_id="offer_cue",
     )
     cue.show(
-        duration=settings.cue_duration,
-        onset_trigger=settings.triggers.get(f"{parsed['condition']}_cue_onset"),
+        duration=settings.offer_cue_duration,
+        onset_trigger=settings.triggers.get(f"{parsed['condition']}_offer_cue_onset"),
     ).to_dict(trial_data)
 
-    anticipation = make_unit(unit_label="anticipation").add_stim(stim_bank.get("fixation"))
+    anticipation = make_unit(unit_label="pre_decision_fixation").add_stim(stim_bank.get("fixation"))
     set_trial_context(
         anticipation,
         trial_id=trial_id,
         phase="pre_decision_fixation",
-        deadline_s=_deadline_s(settings.anticipation_duration),
+        deadline_s=_deadline_s(settings.pre_decision_fixation_duration),
         valid_keys=[],
         block_id=trial_data["block_id"],
         condition_id=parsed["condition_id"],
@@ -106,11 +106,11 @@ def run_trial(
         stim_id="fixation",
     )
     anticipation.show(
-        duration=settings.anticipation_duration,
-        onset_trigger=settings.triggers.get(f"{parsed['condition']}_anticipation_onset"),
+        duration=settings.pre_decision_fixation_duration,
+        onset_trigger=settings.triggers.get(f"{parsed['condition']}_pre_decision_fixation_onset"),
     ).to_dict(trial_data)
 
-    decision = make_unit(unit_label="target").add_stim(
+    decision = make_unit(unit_label="offer_decision").add_stim(
         stim_bank.get_and_format(
             "offer_panel",
             proposer_share=int(parsed["proposer_share"]),
@@ -121,7 +121,7 @@ def run_trial(
         decision,
         trial_id=trial_id,
         phase="offer_decision",
-        deadline_s=_deadline_s(settings.offer_duration),
+        deadline_s=_deadline_s(settings.offer_decision_duration),
         valid_keys=[accept_key, reject_key],
         block_id=trial_data["block_id"],
         condition_id=parsed["condition_id"],
@@ -138,8 +138,8 @@ def run_trial(
     )
     decision.capture_response(
         keys=[accept_key, reject_key],
-        duration=settings.offer_duration,
-        onset_trigger=settings.triggers.get(f"{parsed['condition']}_offer_onset"),
+        duration=settings.offer_decision_duration,
+        onset_trigger=settings.triggers.get(f"{parsed['condition']}_offer_decision_onset"),
         response_trigger=settings.triggers.get("decision_response"),
         timeout_trigger=settings.triggers.get("decision_timeout"),
     )
@@ -149,7 +149,7 @@ def run_trial(
     accepted = bool(response == accept_key)
     rejected = bool(response == reject_key)
     timed_out = not (accepted or rejected)
-    choice_label = "接受" if accepted else "拒绝" if rejected else "超时"
+    choice_label = "accept" if accepted else "reject" if rejected else "timeout"
     earned = int(parsed["responder_share"]) if accepted else 0
     total_earned = controller.register_decision(
         condition=parsed["condition"],
@@ -163,14 +163,14 @@ def run_trial(
     )
 
     decision_feedback_name = "decision_accept" if accepted else "decision_reject" if rejected else "decision_timeout"
-    decision_feedback = make_unit(unit_label="decision_feedback").add_stim(
+    decision_feedback = make_unit(unit_label="decision_confirmation").add_stim(
         stim_bank.get_and_format(decision_feedback_name, choice_label=choice_label)
     )
     set_trial_context(
         decision_feedback,
         trial_id=trial_id,
         phase="decision_confirmation",
-        deadline_s=_deadline_s(settings.decision_feedback_duration),
+        deadline_s=_deadline_s(settings.decision_confirmation_duration),
         valid_keys=[],
         block_id=trial_data["block_id"],
         condition_id=parsed["condition_id"],
@@ -184,11 +184,11 @@ def run_trial(
         stim_id=decision_feedback_name,
     )
     decision_feedback.show(
-        duration=settings.decision_feedback_duration,
-        onset_trigger=settings.triggers.get("decision_feedback_onset"),
+        duration=settings.decision_confirmation_duration,
+        onset_trigger=settings.triggers.get("decision_confirmation_onset"),
     ).to_dict(trial_data)
 
-    payoff = make_unit(unit_label="feedback").add_stim(
+    payoff = make_unit(unit_label="payoff_feedback").add_stim(
         stim_bank.get_and_format(
             "payoff_feedback",
             earned=earned,
@@ -201,7 +201,7 @@ def run_trial(
         payoff,
         trial_id=trial_id,
         phase="payoff_feedback",
-        deadline_s=_deadline_s(settings.feedback_duration),
+        deadline_s=_deadline_s(settings.payoff_feedback_duration),
         valid_keys=[],
         block_id=trial_data["block_id"],
         condition_id=parsed["condition_id"],
@@ -215,7 +215,7 @@ def run_trial(
         stim_id="payoff_feedback",
     )
     payoff.show(
-        duration=settings.feedback_duration,
+        duration=settings.payoff_feedback_duration,
         onset_trigger=settings.triggers.get("payoff_feedback_onset"),
     ).to_dict(trial_data)
 

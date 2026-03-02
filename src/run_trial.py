@@ -93,9 +93,9 @@ def run_trial(
         onset_trigger=settings.triggers.get(f"{parsed['condition']}_offer_cue_onset"),
     ).to_dict(trial_data)
 
-    anticipation = make_unit(unit_label="pre_decision_fixation").add_stim(stim_bank.get("fixation"))
+    pre_decision_fixation = make_unit(unit_label="pre_decision_fixation").add_stim(stim_bank.get("fixation"))
     set_trial_context(
-        anticipation,
+        pre_decision_fixation,
         trial_id=trial_id,
         phase="pre_decision_fixation",
         deadline_s=_deadline_s(settings.pre_decision_fixation_duration),
@@ -105,7 +105,7 @@ def run_trial(
         task_factors={"stage": "pre_decision_fixation", "condition": parsed["condition"], "block_idx": block_idx_val},
         stim_id="fixation",
     )
-    anticipation.show(
+    pre_decision_fixation.show(
         duration=settings.pre_decision_fixation_duration,
         onset_trigger=settings.triggers.get(f"{parsed['condition']}_pre_decision_fixation_onset"),
     ).to_dict(trial_data)
@@ -162,9 +162,9 @@ def run_trial(
         responder_share=int(parsed["responder_share"]),
     )
 
-    decision_feedback_name = "decision_accept" if accepted else "decision_reject" if rejected else "decision_timeout"
+    decision_confirmation_stim_id = "decision_accept" if accepted else "decision_reject" if rejected else "decision_timeout"
     decision_feedback = make_unit(unit_label="decision_confirmation").add_stim(
-        stim_bank.get_and_format(decision_feedback_name, choice_label=choice_label)
+        stim_bank.get_and_format(decision_confirmation_stim_id, choice_label=choice_label)
     )
     set_trial_context(
         decision_feedback,
@@ -181,7 +181,7 @@ def run_trial(
             "timed_out": timed_out,
             "block_idx": block_idx_val,
         },
-        stim_id=decision_feedback_name,
+        stim_id=decision_confirmation_stim_id,
     )
     decision_feedback.show(
         duration=settings.decision_confirmation_duration,

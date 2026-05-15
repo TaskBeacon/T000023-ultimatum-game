@@ -8,7 +8,7 @@ maturity: draft
 version:
   release_tag: v0.3.1-dev
 contracts:
-  psyflow_taps: v0.1.0
+  taps: v0.1.0
 evidence:
 - W2105347098
 - W2166757776

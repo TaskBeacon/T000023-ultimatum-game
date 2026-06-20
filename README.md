@@ -24,6 +24,8 @@ Accepting yields the displayed responder share. Rejecting or timing out yields z
 
 ## 2. Task Flow
 
+![Task Flow](task_flow.png)
+
 ### Block-Level Flow
 
 | Step | Description |

@@ -3,7 +3,7 @@ from __future__ import annotations
 from functools import partial
 from typing import Any
 
-from psyflow import StimUnit, set_trial_context
+from psyflow import StimUnit, next_trial_id, set_trial_context
 
 
 def _deadline_s(value: Any) -> float | None:
@@ -61,11 +61,13 @@ def run_trial(
     """Run one Ultimatum Game trial."""
     parsed = _parse_condition(condition)
     block_idx_val = int(block_idx) if block_idx is not None else 0
-    trial_id = int(parsed["trial_index"]) if parsed["trial_index"] > 0 else 1
+    trial_index = int(parsed["trial_index"]) if parsed["trial_index"] > 0 else 1
+    trial_id = next_trial_id()
     accept_key, reject_key = list(settings.key_list)
 
     trial_data = {
         "trial_id": trial_id,
+        "trial_index": trial_index,
         "block_id": str(block_id) if block_id is not None else "block_0",
         "block_idx": block_idx_val,
         "condition": parsed["condition"],
@@ -154,7 +156,7 @@ def run_trial(
     total_earned = controller.register_decision(
         condition=parsed["condition"],
         block_idx=block_idx_val,
-        trial_index=trial_id,
+        trial_index=trial_index,
         choice=choice_label,
         accepted=accepted,
         earned=earned,

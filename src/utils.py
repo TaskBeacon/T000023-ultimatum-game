@@ -138,3 +138,34 @@ class Controller:
                 f"choice={choice} accepted={accepted} earned={earned} total={self._total_earned}"
             )
         return int(self._total_earned)
+
+
+def parse_ultimatum_condition(condition: Any) -> dict[str, Any]:
+    """Decode a scheduled Ultimatum Game condition."""
+    if isinstance(condition, tuple) and len(condition) >= 6:
+        name, label, proposer_share, responder_share, condition_id, trial_index, *_ = condition
+        return {
+            "condition": str(name),
+            "condition_label": str(label),
+            "proposer_share": int(proposer_share),
+            "responder_share": int(responder_share),
+            "condition_id": str(condition_id),
+            "trial_index": int(trial_index),
+        }
+    if isinstance(condition, dict):
+        return {
+            "condition": str(condition.get("condition", "fair")),
+            "condition_label": str(condition.get("condition_label", "fair")),
+            "proposer_share": int(condition.get("proposer_share", 5)),
+            "responder_share": int(condition.get("responder_share", 5)),
+            "condition_id": str(condition.get("condition_id", "unknown")),
+            "trial_index": int(condition.get("trial_index", 0)),
+        }
+    return {
+        "condition": str(condition),
+        "condition_label": str(condition),
+        "proposer_share": 5,
+        "responder_share": 5,
+        "condition_id": str(condition),
+        "trial_index": 0,
+    }
